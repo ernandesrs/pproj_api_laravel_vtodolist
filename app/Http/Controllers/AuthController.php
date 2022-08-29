@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthLoginRequest;
+use App\Http\Resources\UserResource;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
 
@@ -23,12 +24,14 @@ class AuthController extends Controller
 
     /**
      * @param AuthLoginRequest $request
-     * @return void
+     * @return App\Http\Resources\UserResource
+     * @throws LoginInvalidException
      */
     public function login(AuthLoginRequest $request)
     {
         $input = $request->validated();
+        $token = $this->authService->login($input['email'], $input['password']);
 
-        $this->authService->login();
+        return (new UserResource(auth()->user()))->additional($token);
     }
 }

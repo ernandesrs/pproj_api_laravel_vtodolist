@@ -2,10 +2,31 @@
 
 namespace App\Services;
 
+use App\Exceptions\LoginInvalidException;
+
 class AuthService
 {
-    public function login()
+    /**
+     * @param string $email
+     * @param string $pass
+     * @return array
+     * @throws LoginInvalidException
+     */
+    public function login(string $email, string $pass)
     {
-        dd("services");
+        $login = [
+            'email' => $email,
+            'password' => $pass
+        ];
+
+        $token = auth()->attempt($login);
+        if (!$token) {
+            throw new LoginInvalidException();
+        }
+
+        return [
+            "access_token" => $token,
+            "token_type" => 'Bearer',
+        ];
     }
 }
